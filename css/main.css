@@ -1,0 +1,8 @@
+:root {
+	background: rgb(0, 0, 10);
+}
+#app {
+	display: flex;
+	justify-self: center;
+	border: white dotted 2px;
+}
