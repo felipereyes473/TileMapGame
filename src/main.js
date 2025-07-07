@@ -3,10 +3,13 @@ const ctx = game.getContext("2d");
 game.width = 500;
 game.height = 500;
 
+var isPause = false;
+
 const tileLen = 50;
 const userSpeed = 10;
 const atackSpeed = 10;
 const lookHelperWidth = 5;
+const arrowSpeed = 2;
 
 const map = [
 	0, 0, 0, 0, 0, 1, 1, 2, 2, 2,
@@ -21,10 +24,18 @@ const map = [
 	2, 1, 0, 0, 0, 0, 0, 0, 0, 0,
 ];
 
+let grassTile = new Image();
+let sandTile = new Image();
+let seaTile = new Image();
+
+grassTile.src = "./assets/grass.png"
+sandTile.src = "./assets/sand.png"
+seaTile.src = "./assets/sea.png"
+
 const colors = [
-	"rgb(26, 101, 55)",
-	"rgb(242, 249, 205)",
-	"rgb(102, 157, 245)"
+	grassTile,
+	sandTile,
+	seaTile
 ];
 
 const drawMap = () => {
@@ -32,9 +43,53 @@ const drawMap = () => {
 		for(let col = 0; col < 10; col++){
 			let currentPos = (rows * 10) + col;
 			let colorCode = map[currentPos];
+			if(typeof colors[colorCode] == "object") {
+				ctx.drawImage(colors[colorCode], (col * tileLen), (rows * tileLen))
+			} else {
 			ctx.fillStyle = colors[colorCode];
 			ctx.fillRect((col * tileLen), (rows * tileLen), tileLen, tileLen);
+			}
 		}
+	}
+}
+
+function Arrow(x, y, direction) {
+	this.x = x;
+	this.y = y;
+	this.direction = direction;
+
+	this.isOffLimits = () => {
+		if(this.x <= 0) {return true}
+		if(this.x >= game.width) {return true}
+		if(this.y <= 0) {return true}
+		if(this.y >= game.width) {return true}		
+		return false;
+	}
+
+	this.draw = () => {
+		ctx.beginPath();
+		ctx.arc(this.x, this.y, 5, 0, 2 * Math.PI);
+		ctx.stroke();	
+		ctx.fillStyle = "black";
+	}
+
+	this.update = () => {
+		switch(this.direction){
+			case 0:
+				this.y -= arrowSpeed;
+				break;
+				//console.log(this.y)
+			case 1:
+				this.y += arrowSpeed;
+				break;
+			case 2:
+				this.x -= arrowSpeed;
+				break;
+			case 3:
+				this.x += arrowSpeed;
+				break;
+		}
+		this.draw();
 	}
 }
 
@@ -62,11 +117,13 @@ function Player(x, y) {
 			this.drawAtack();
 		}
 	}
+
 	this.update = () => {
 		this.x = position.x;
 		this.y = position.y;
 		this.draw();
 	}
+
 	this.drawLookHelp = () => {
 		ctx.fillStyle = "black";
 		if(this.lookingAt === 0){
@@ -86,9 +143,19 @@ function Player(x, y) {
 				return;
 		}
 	}
+
 	this.atack = () => {
 		this.atackDelay = atackSpeed;
 	}
+
+	this.shot = () => {
+		console.log(this.lookingAt);
+		let arrow = new Arrow(this.x, this.y, this.lookingAt);
+		arrowsThrowed.push(arrow);
+		//var arrow1 = new Arrow(10, 10, 1);
+		console.log(arrowsThrowed) 
+	}
+
 	this.drawAtack = () => {
 		ctx.fillStyle = "blue";
 		let atackX = this.x;
@@ -116,16 +183,34 @@ var position = {
 
 var p1 = new Player(10, 10);
 
+var arrowsThrowed = [];
+var arrowsOffLimit = [];
+
+const updateFlyingElements = () => {
+	for(let i = 0; i < arrowsThrowed.length; i++)
+	{
+		if(arrowsThrowed[i]){
+			arrowsThrowed[i].update();
+			if(arrowsThrowed[i].isOffLimits()){
+			arrowsThrowed[i] = null;
+			}
+		}
+	}
+}
+
 function clearScreen() {
 	ctx.clearRect(0, 0, game.width, game.height);
 }
 
-//function animate() {
+function animate() {
 	clearScreen();
 	drawMap();
 	p1.update();
-//	requestAnimationFrame(animate)
-//}
+	updateFlyingElements();
+	if(!isPause){
+		requestAnimationFrame(animate)	
+	}
+}
 
 window.addEventListener("keydown", (event) => {
 	switch(event.key){
@@ -137,7 +222,6 @@ window.addEventListener("keydown", (event) => {
 		case "ArrowDown":
 			position.y += userSpeed; 
 			p1.lookingAt = 1;
-			p1.update();
 			event.preventDefault();
 			break;
 		case "ArrowLeft":
@@ -152,6 +236,9 @@ window.addEventListener("keydown", (event) => {
 			break;
 		case "q":
 			p1.atack();
+			break;
+		case "e": 
+			p1.shot();
 			break;
 	}
 })

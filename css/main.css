@@ -1,8 +1,11 @@
 :root {
 	background: rgb(0, 0, 10);
+	color: white;
 }
+
 #app {
 	display: flex;
 	justify-self: center;
 	border: white dotted 2px;
 }
+
