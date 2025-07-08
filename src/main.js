@@ -107,6 +107,10 @@ function Player(x, y) {
 	this.x = x;
 	this.y = y;
 	this.atackDelay = 0;
+	this.movingDelay = 0;
+	this.isMoving = false;
+	this.isMovingDelay = 0;
+	this.animationIndex = false;
 
 	/*
 	 * lookingAt
@@ -118,16 +122,12 @@ function Player(x, y) {
 	this.lookingAt = 0;
 
 	this.draw = () => {
-		ctx.fillStyle = "red";
-		//ctx.drawImage(arrowSprite, this.sx, this.sy, this.arrowSize, this.arrowSize, this.x, this.y, this.arrowSize, this.arrowSize);
-		//ctx.fillRect(this.x, this.y, tileLen, tileLen);
-		ctx.drawImage(playerSprite, (this.lookingAt * 50), 0, tileLen, tileLen, this.x, this.y, tileLen, tileLen);
-		//this.drawLookHelp()
-		if(this.atackDelay > 1)
-		{
-			this.atackDelay--;
-			this.drawAtack();
+		if(this.isMoving){
+			this.handleSpriteMove();
+		} else {
+			ctx.drawImage(playerSprite, (this.lookingAt * 50), 0, tileLen, tileLen, this.x, this.y, tileLen, tileLen);
 		}
+		this.handleAtack();
 	}
 
 	this.update = () => {
@@ -136,23 +136,51 @@ function Player(x, y) {
 		this.draw();
 	}
 
+	this.handleSpriteMove = () => {
+		this.drawMovingCharacter();
+			this.movingDelay--;
+			if(this.movingDelay <= 0){
+				this.isMoving = false;
+			}
+	}
+
+	this.handleAtack = () => {
+		if(this.atackDelay > 1){
+			this.atackDelay--;
+			this.drawAtack();
+		}
+	}
+
+	this.drawMovingCharacter = () => {
+		if (this.isMovingDelay > 10){
+			this.isMovingDelay = 0;
+			this.animationIndex = !this.animationIndex;
+		}
+		this.isMovingDelay++;
+		if(this.animationIndex){
+			ctx.drawImage(playerSprite, (this.lookingAt * 50), 50, tileLen, tileLen, this.x, this.y, tileLen, tileLen);
+		} else {
+			ctx.drawImage(playerSprite, (this.lookingAt * 50), 100, tileLen, tileLen, this.x, this.y, tileLen, tileLen);	
+		}
+	}
+
 	this.drawLookHelp = () => {
-		ctx.fillStyle = "black";
+			ctx.fillStyle = "black";
 		if(this.lookingAt === 0){
-				ctx.fillRect(this.x, this.y, tileLen, lookHelperWidth)
-				return;
+			ctx.fillRect(this.x, this.y, tileLen, lookHelperWidth)
+			return;
 		}
 		if(this.lookingAt === 1){
-				ctx.fillRect(this.x, this.y + (tileLen - lookHelperWidth), tileLen, lookHelperWidth)
-				return;
+			ctx.fillRect(this.x, this.y + (tileLen - lookHelperWidth), tileLen, lookHelperWidth)
+			return;
 		}
 		if(this.lookingAt === 2){
-				ctx.fillRect(this.x, this.y, lookHelperWidth, tileLen)
-				return;
+			ctx.fillRect(this.x, this.y, lookHelperWidth, tileLen)
+			return;
 		}
 		if(this.lookingAt === 3){
-				ctx.fillRect(this.x + (tileLen - lookHelperWidth), this.y, lookHelperWidth, tileLen)
-				return;
+			ctx.fillRect(this.x + (tileLen - lookHelperWidth), this.y, lookHelperWidth, tileLen)
+			return;
 		}
 	}
 
@@ -186,11 +214,11 @@ function Player(x, y) {
 }
 
 var position = {
-	x: 10,
-	y: 10
+	x: 200,
+	y: 200
 };
 
-var p1 = new Player(10, 10);
+var p1 = new Player(200, 200);
 
 var arrowsThrowed = [];
 var arrowsOffLimit = [];
@@ -224,18 +252,26 @@ function animate() {
 const moveUp = () => {
 	position.y -= userSpeed; 
 	p1.lookingAt = 0;
+	p1.isMoving = true;
+	p1.movingDelay+= 5;
 }
 const moveDown = () => {
 	position.y += userSpeed; 
 	p1.lookingAt = 1;
+	p1.isMoving = true;
+	p1.movingDelay+= 5;
 }
 const moveLeft = () => {
 	position.x -= userSpeed; 
 	p1.lookingAt = 2;
+	p1.isMoving = true;
+	p1.movingDelay+= 5;
 }
 const moveRight = () => {
 	position.x += userSpeed; 
 	p1.lookingAt = 3;
+	p1.isMoving = true;
+	p1.movingDelay+= 5;
 }
 
 window.addEventListener("keydown", (event) => {
@@ -276,6 +312,7 @@ window.addEventListener("keydown", (event) => {
 			break;
 	}
 })
+
 left_arrow.addEventListener("click", moveLeft);
 up_arrow.addEventListener("click", moveUp);
 down_arrow.addEventListener("click", moveDown);
