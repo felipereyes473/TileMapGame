@@ -121,9 +121,8 @@ function Player(x, y) {
 		ctx.fillStyle = "red";
 		//ctx.drawImage(arrowSprite, this.sx, this.sy, this.arrowSize, this.arrowSize, this.x, this.y, this.arrowSize, this.arrowSize);
 		//ctx.fillRect(this.x, this.y, tileLen, tileLen);
-		// 
 		ctx.drawImage(playerSprite, (this.lookingAt * 50), 0, tileLen, tileLen, this.x, this.y, tileLen, tileLen);
-		this.drawLookHelp()
+		//this.drawLookHelp()
 		if(this.atackDelay > 1)
 		{
 			this.atackDelay--;
