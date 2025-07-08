@@ -78,7 +78,6 @@ function Arrow(x, y, direction) {
 			case 0:
 				this.y -= arrowSpeed;
 				break;
-				//console.log(this.y)
 			case 1:
 				this.y += arrowSpeed;
 				break;
@@ -149,11 +148,8 @@ function Player(x, y) {
 	}
 
 	this.shot = () => {
-		console.log(this.lookingAt);
-		let arrow = new Arrow(this.x, this.y, this.lookingAt);
+		let arrow = new Arrow(this.x + (tileLen / 2), this.y + (tileLen/2), this.lookingAt);
 		arrowsThrowed.push(arrow);
-		//var arrow1 = new Arrow(10, 10, 1);
-		console.log(arrowsThrowed) 
 	}
 
 	this.drawAtack = () => {
@@ -212,26 +208,39 @@ function animate() {
 	}
 }
 
+const moveUp = () => {
+	position.y -= userSpeed; 
+	p1.lookingAt = 0;
+}
+const moveDown = () => {
+	position.y += userSpeed; 
+	p1.lookingAt = 1;
+}
+const moveLeft = () => {
+	position.x -= userSpeed; 
+	p1.lookingAt = 2;
+}
+const moveRight = () => {
+	position.x += userSpeed; 
+	p1.lookingAt = 3;
+}
+
 window.addEventListener("keydown", (event) => {
 	switch(event.key){
 		case "ArrowUp":
-			position.y -= userSpeed; 
-			p1.lookingAt = 0;
+			moveUp()
 			event.preventDefault();
 			break;
 		case "ArrowDown":
-			position.y += userSpeed; 
-			p1.lookingAt = 1;
+			moveDown()
 			event.preventDefault();
 			break;
 		case "ArrowLeft":
-			position.x -= userSpeed; 
-			p1.lookingAt = 2;
+			moveLeft()
 			event.preventDefault();
 			break;
 		case "ArrowRight":
-			position.x += userSpeed; 
-			p1.lookingAt = 3;
+			moveRight();
 			event.preventDefault();
 			break;
 		case "q":
@@ -242,5 +251,12 @@ window.addEventListener("keydown", (event) => {
 			break;
 	}
 })
+left_arrow.addEventListener("click", moveLeft);
+up_arrow.addEventListener("click", moveUp);
+down_arrow.addEventListener("click", moveDown);
+right_arrow.addEventListener("click", moveRight);
+
+atack_btn.addEventListener("click", p1.atack)
+shot_btn.addEventListener("click", p1.shot)
 
 animate();

@@ -3,9 +3,41 @@
 	color: white;
 }
 
-#app {
+#app, #controller_section {
 	display: flex;
 	justify-self: center;
 	border: white dotted 2px;
+	gap: 1em;
 }
 
+#arrow_controller {
+	padding: 50px;
+	position: relative;
+	#left_arrow, #up_arrow, #right_arrow, #down_arrow {
+		position: absolute;
+		padding: 2px;
+		font-size: 1.5em;
+		font-weight: 700;
+	}
+	#left_arrow {
+		left: 0;
+		top: 30%;
+	}
+	#up_arrow {
+		left: 35%;
+		top: 0;
+	}
+	#right_arrow {
+		right: 0;
+		top: 30%;
+	}
+	#down_arrow {
+		bottom: 0;
+		left: 35%;
+	}
+}
+
+#extra_controller {
+	justify-content: center;
+	align-content: center;
+}
