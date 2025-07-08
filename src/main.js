@@ -27,10 +27,12 @@ const map = [
 let grassTile = new Image();
 let sandTile = new Image();
 let seaTile = new Image();
+let arrowSprite = new Image();
 
 grassTile.src = "./assets/grass.png"
 sandTile.src = "./assets/sand.png"
 seaTile.src = "./assets/sea.png"
+arrowSprite.src = "./assets/arrow.png"
 
 const colors = [
 	grassTile,
@@ -54,10 +56,19 @@ const drawMap = () => {
 }
 
 function Arrow(x, y, direction) {
-	this.x = x;
-	this.y = y;
+	this.x = (x - (tileLen / 4));
+	this.y = (y - (tileLen / 4));
+	console.log(x, y)
 	this.direction = direction;
-
+	this.sx = 0;
+	this.arrowSize = (tileLen / 2)
+	this.sy = 0;
+	if(direction == 1 || direction == 3){
+		this.sx = this.arrowSize; 
+	}
+	if(direction == 2 || direction == 3) {
+		this.sy = this.arrowSize;
+	}
 	this.isOffLimits = () => {
 		if(this.x <= 0) {return true}
 		if(this.x >= game.width) {return true}
@@ -67,10 +78,7 @@ function Arrow(x, y, direction) {
 	}
 
 	this.draw = () => {
-		ctx.beginPath();
-		ctx.arc(this.x, this.y, 5, 0, 2 * Math.PI);
-		ctx.stroke();	
-		ctx.fillStyle = "black";
+		ctx.drawImage(arrowSprite, this.sx, this.sy, this.arrowSize, this.arrowSize, this.x, this.y, this.arrowSize, this.arrowSize);
 	}
 
 	this.update = () => {
@@ -242,6 +250,18 @@ window.addEventListener("keydown", (event) => {
 		case "ArrowRight":
 			moveRight();
 			event.preventDefault();
+			break;
+		case "w":
+			moveUp();
+			break;
+		case "a":
+			moveLeft();
+			break;
+		case "s":
+			moveDown();
+			break;
+		case "d":
+			moveRight();
 			break;
 		case "q":
 			p1.atack();
