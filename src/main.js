@@ -28,11 +28,13 @@ let grassTile = new Image();
 let sandTile = new Image();
 let seaTile = new Image();
 let arrowSprite = new Image();
+let playerSprite = new Image();
 
 grassTile.src = "./assets/grass.png"
 sandTile.src = "./assets/sand.png"
 seaTile.src = "./assets/sea.png"
 arrowSprite.src = "./assets/arrow.png"
+playerSprite.src = "./assets/player.png"
 
 const colors = [
 	grassTile,
@@ -58,11 +60,12 @@ const drawMap = () => {
 function Arrow(x, y, direction) {
 	this.x = (x - (tileLen / 4));
 	this.y = (y - (tileLen / 4));
-	console.log(x, y)
 	this.direction = direction;
 	this.sx = 0;
 	this.arrowSize = (tileLen / 2)
 	this.sy = 0;
+	/*	the arrow sprite is a square of 50x50
+	 */
 	if(direction == 1 || direction == 3){
 		this.sx = this.arrowSize; 
 	}
@@ -116,7 +119,10 @@ function Player(x, y) {
 
 	this.draw = () => {
 		ctx.fillStyle = "red";
-		ctx.fillRect(this.x, this.y, tileLen, tileLen);
+		//ctx.drawImage(arrowSprite, this.sx, this.sy, this.arrowSize, this.arrowSize, this.x, this.y, this.arrowSize, this.arrowSize);
+		//ctx.fillRect(this.x, this.y, tileLen, tileLen);
+		// 
+		ctx.drawImage(playerSprite, (this.lookingAt * 50), 0, tileLen, tileLen, this.x, this.y, tileLen, tileLen);
 		this.drawLookHelp()
 		if(this.atackDelay > 1)
 		{
