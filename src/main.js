@@ -1,16 +1,21 @@
 const game = document.getElementById("app");
 const ctx = game.getContext("2d");
+
+//import Enemy from "./src/mobs/enemy.js"
+
 game.width = 500;
 game.height = 500;
 
 var isPause = false;
 
-const tileLen = 50;
-const userSpeed = 10;
-const atackSpeed = 10;
+const TILE_LENGTH = 50;
+const USER_SPEED = 10;
+const ATACK_SPEED = 10;
 const lookHelperWidth = 5;
-const arrowSpeed = 2;
+const ARROW_SPEED = 2;
+const ENEMY_SPAWNING_RATE = 1000;
 
+// map and draw map
 const map = [
 	0, 0, 0, 0, 0, 1, 1, 2, 2, 2,
 	0, 0, 0, 0, 0, 0, 1, 1, 2, 2,
@@ -48,21 +53,21 @@ const drawMap = () => {
 			let currentPos = (rows * 10) + col;
 			let colorCode = map[currentPos];
 			if(typeof colors[colorCode] == "object") {
-				ctx.drawImage(colors[colorCode], (col * tileLen), (rows * tileLen))
+				ctx.drawImage(colors[colorCode], (col * TILE_LENGTH), (rows * TILE_LENGTH))
 			} else {
 			ctx.fillStyle = colors[colorCode];
-			ctx.fillRect((col * tileLen), (rows * tileLen), tileLen, tileLen);
+			ctx.fillRect((col * TILE_LENGTH), (rows * TILE_LENGTH), TILE_LENGTH, TILE_LENGTH);
 			}
 		}
 	}
 }
 
 function Arrow(x, y, direction) {
-	this.x = (x - (tileLen / 4));
-	this.y = (y - (tileLen / 4));
+	this.x = (x - (TILE_LENGTH / 4));
+	this.y = (y - (TILE_LENGTH / 4));
 	this.direction = direction;
 	this.sx = 0;
-	this.arrowSize = (tileLen / 2)
+	this.arrowSize = (TILE_LENGTH / 2)
 	this.sy = 0;
 	/*	the arrow sprite is a square of 50x50
 	 */
@@ -87,16 +92,16 @@ function Arrow(x, y, direction) {
 	this.update = () => {
 		switch(this.direction){
 			case 0:
-				this.y -= arrowSpeed;
+				this.y -= ARROW_SPEED;
 				break;
 			case 1:
-				this.y += arrowSpeed;
+				this.y += ARROW_SPEED;
 				break;
 			case 2:
-				this.x -= arrowSpeed;
+				this.x -= ARROW_SPEED;
 				break;
 			case 3:
-				this.x += arrowSpeed;
+				this.x += ARROW_SPEED;
 				break;
 		}
 		this.draw();
@@ -125,7 +130,7 @@ function Player(x, y) {
 		if(this.isMoving){
 			this.handleSpriteMove();
 		} else {
-			ctx.drawImage(playerSprite, (this.lookingAt * 50), 0, tileLen, tileLen, this.x, this.y, tileLen, tileLen);
+			ctx.drawImage(playerSprite, (this.lookingAt * 50), 0, TILE_LENGTH, TILE_LENGTH, this.x, this.y, TILE_LENGTH, TILE_LENGTH);
 		}
 		this.handleAtack();
 	}
@@ -158,38 +163,38 @@ function Player(x, y) {
 		}
 		this.isMovingDelay++;
 		if(this.animationIndex){
-			ctx.drawImage(playerSprite, (this.lookingAt * 50), 50, tileLen, tileLen, this.x, this.y, tileLen, tileLen);
+			ctx.drawImage(playerSprite, (this.lookingAt * 50), 50, TILE_LENGTH, TILE_LENGTH, this.x, this.y, TILE_LENGTH, TILE_LENGTH);
 		} else {
-			ctx.drawImage(playerSprite, (this.lookingAt * 50), 100, tileLen, tileLen, this.x, this.y, tileLen, tileLen);	
+			ctx.drawImage(playerSprite, (this.lookingAt * 50), 100, TILE_LENGTH, TILE_LENGTH, this.x, this.y, TILE_LENGTH, TILE_LENGTH);	
 		}
 	}
 
 	this.drawLookHelp = () => {
 			ctx.fillStyle = "black";
 		if(this.lookingAt === 0){
-			ctx.fillRect(this.x, this.y, tileLen, lookHelperWidth)
+			ctx.fillRect(this.x, this.y, TILE_LENGTH, lookHelperWidth)
 			return;
 		}
 		if(this.lookingAt === 1){
-			ctx.fillRect(this.x, this.y + (tileLen - lookHelperWidth), tileLen, lookHelperWidth)
+			ctx.fillRect(this.x, this.y + (TILE_LENGTH - lookHelperWidth), TILE_LENGTH, lookHelperWidth)
 			return;
 		}
 		if(this.lookingAt === 2){
-			ctx.fillRect(this.x, this.y, lookHelperWidth, tileLen)
+			ctx.fillRect(this.x, this.y, lookHelperWidth, TILE_LENGTH)
 			return;
 		}
 		if(this.lookingAt === 3){
-			ctx.fillRect(this.x + (tileLen - lookHelperWidth), this.y, lookHelperWidth, tileLen)
+			ctx.fillRect(this.x + (TILE_LENGTH - lookHelperWidth), this.y, lookHelperWidth, TILE_LENGTH)
 			return;
 		}
 	}
 
 	this.atack = () => {
-		this.atackDelay = atackSpeed;
+		this.atackDelay = ATACK_SPEED;
 	}
 
 	this.shot = () => {
-		let arrow = new Arrow(this.x + (tileLen / 2), this.y + (tileLen/2), this.lookingAt);
+		let arrow = new Arrow(this.x + (TILE_LENGTH / 2), this.y + (TILE_LENGTH/2), this.lookingAt);
 		arrowsThrowed.push(arrow);
 	}
 
@@ -198,19 +203,74 @@ function Player(x, y) {
 		let atackX = this.x;
 		let atackY = this.y;
 		if(this.lookingAt === 0){
-			atackY = (this.y - tileLen);
+			atackY = (this.y - TILE_LENGTH);
 		}
 		if(this.lookingAt === 1){
-			atackY = (this.y + tileLen);	
+			atackY = (this.y + TILE_LENGTH);	
 		}
 		if(this.lookingAt === 2){
-			atackX = (this.x - tileLen);	
+			atackX = (this.x - TILE_LENGTH);	
 		}
 		if(this.lookingAt === 3){
-			atackX = (this.x + tileLen);	
+			atackX = (this.x + TILE_LENGTH);	
 		}
-		ctx.fillRect(atackX, atackY, tileLen, tileLen);
+		ctx.fillRect(atackX, atackY, TILE_LENGTH, TILE_LENGTH);
 	} 
+}
+
+function Enemy(x, y) {
+	this.x = x;
+	this.y = y;
+	this.shotCoolDown = 100;
+	this.userDirectionRel = 0;
+	this.draw = () => {
+		ctx.fillStyle = "red";
+		ctx.fillRect(this.x, this.y, TILE_LENGTH, TILE_LENGTH)
+	}
+	this.update = () => {
+		this.handleUserPosition();
+		this.handleShot();
+		this.draw();
+	}
+	this.handleUserPosition = () => {
+		if(position.x > this.x){
+			this.x++;
+			this.userDirectionRel = 3;
+		} else if( position.y > this.y){
+			this.y++;
+			this.userDirectionRel = 1;
+		}
+		if(position.x < this.x){
+			this.x--;
+			this.userDirectionRel = 2;
+		} else if(position.y < this.y){
+			this.y--;
+			this.userDirectionRel = 0;
+		}
+	}
+	this.handleShot = () => {
+		if(this.canShot()){
+			this.shot()
+		}	
+	}
+	this.canShot = () => {
+		let isCoolDownOver = this.handleCoolDown();
+		let isProperToShot = (isCoolDownOver);
+		return isProperToShot;
+	}
+	this.handleCoolDown = () => {
+		let isOnPosition = (this.x == position.x || this.y == position.y);
+		if(this.shotCoolDown <= 0 && isOnPosition){
+			this.shotCoolDown = 100;
+			return true;
+		}
+		this.shotCoolDown--;
+		return false;
+	}
+	this.shot = () => {	
+		let arrow = new Arrow(this.x + (TILE_LENGTH / 2), this.y + (TILE_LENGTH/2), this.userDirectionRel);
+		arrowsThrowed.push(arrow);
+	}
 }
 
 var position = {
@@ -219,9 +279,9 @@ var position = {
 };
 
 var p1 = new Player(200, 200);
+var mob1 = new Enemy(200, 200);
 
 var arrowsThrowed = [];
-var arrowsOffLimit = [];
 
 const updateFlyingElements = () => {
 	for(let i = 0; i < arrowsThrowed.length; i++)
@@ -239,9 +299,31 @@ function clearScreen() {
 	ctx.clearRect(0, 0, game.width, game.height);
 }
 
+var mobs_on_game = [];
+var mob_spawn_counter = 0;
+var last_mob_spawn = 0;
+const handle_mob_spawning = () => {
+	if(mob_spawn_counter == ENEMY_SPAWNING_RATE){
+		spawn_new_enemy();
+		mob_spawn_counter = 0;
+	}
+	mob_spawn_counter++;
+	for(let i = 0; i < mobs_on_game.length; i++){
+		mobs_on_game[i].update();
+	}
+}
+
+const spawn_new_enemy = () => {
+	let x = 100;
+	let y = 100;
+	let new_enemy = new Enemy(x, y);
+	mobs_on_game.push(new_enemy);
+}
+
 function animate() {
 	clearScreen();
 	drawMap();
+	handle_mob_spawning();
 	p1.update();
 	updateFlyingElements();
 	if(!isPause){
@@ -250,25 +332,25 @@ function animate() {
 }
 
 const moveUp = () => {
-	position.y -= userSpeed; 
+	position.y -= USER_SPEED; 
 	p1.lookingAt = 0;
 	p1.isMoving = true;
 	p1.movingDelay+= 5;
 }
 const moveDown = () => {
-	position.y += userSpeed; 
+	position.y += USER_SPEED; 
 	p1.lookingAt = 1;
 	p1.isMoving = true;
 	p1.movingDelay+= 5;
 }
 const moveLeft = () => {
-	position.x -= userSpeed; 
+	position.x -= USER_SPEED; 
 	p1.lookingAt = 2;
 	p1.isMoving = true;
 	p1.movingDelay+= 5;
 }
 const moveRight = () => {
-	position.x += userSpeed; 
+	position.x += USER_SPEED; 
 	p1.lookingAt = 3;
 	p1.isMoving = true;
 	p1.movingDelay+= 5;
