@@ -2,7 +2,9 @@
 	background: rgb(0, 0, 10);
 	color: white;
 }
-
+header > p {
+	margin: 5px;
+}
 #app, #controller_section {
 	display: flex;
 	justify-self: center;

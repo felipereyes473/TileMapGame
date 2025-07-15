@@ -8,11 +8,10 @@
   <body>
 		<header>
 			<p>use arrow keys or (wasd) to move, press "q" to atack and "e" to throw an arrow</p>
+			<p>enemies defeated: <span id="enemiesDefeated">0</span></p>	
 		</header>
     <main>
-				<input type="color" text="color selector"/>
-				<button onclick="isPause=!isPause">pause</button>
-				<canvas id="app">ok, we are cooked</canvas>
+			<canvas id="app">ok, we are cooked</canvas>
     </main>
 		<section id="controller_section">
 			<div id="arrow_controller">
@@ -26,6 +25,7 @@
 				<button id="shot_btn">shot</button>
 			</div>
 		</section>
+		<button onclick="isPause=!isPause" id="pauseBtn">pause</button>
     <script src="./src/main.js"></script>
 	</body>
 </html>
