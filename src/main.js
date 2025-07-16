@@ -1,8 +1,6 @@
 const game = document.getElementById("app");
 const ctx = game.getContext("2d");
 
-//import Enemy from "./src/mobs/enemy.js"
-
 game.width = 500;
 game.height = 500;
 
@@ -69,7 +67,8 @@ function Arrow(x, y, direction) {
 	this.sx = 0;
 	this.arrowSize = (TILE_LENGTH / 2)
 	this.sy = 0;
-	/*	the arrow sprite is a square of 50x50
+	/*	
+	 *	the arrow sprite is a square of 50x50
 	 */
 	if(direction == 1 || direction == 3){
 		this.sx = this.arrowSize; 
@@ -141,9 +140,9 @@ function Player(x, y) {
 	this.update = () => {
 		this.x = position.x;
 		this.y = position.y;
-		this.checkStatus();
 		this.updateFlyingElements();
 		this.draw();
+		this.checkStatus();
 	}
 
 	this.checkStatus = () => {	
@@ -261,6 +260,7 @@ function Enemy(x, y) {
 	this.y = y;
 	this.shotCoolDown = 100;
 	this.userDirectionRel = 0;
+	this.closeAtackDelay = 100;
 
 	this.draw = () => {
 		ctx.fillStyle = "red";
@@ -269,8 +269,21 @@ function Enemy(x, y) {
 	this.update = () => {
 		this.handleUserPosition();
 		this.handleShot();
+		this.closingDamageToPlayer();
 		this.draw();
 	}
+	
+	this.closingDamageToPlayer = () => {
+		let isOnXRange = ((this.x >= position.x) && (this.x <= position.x + TILE_LENGTH));
+		let isOnYRange = ((this.y >= position.y) && (this.y <= position.y + TILE_LENGTH));
+		if(this.closeAtackDelay >= 1) {this.closeAtackDelay--;}
+
+		if(isOnXRange && isOnYRange && (this.closeAtackDelay == 0)){
+			this.closeAtackDelay = 100;
+			p1.recibeDamage();
+		}
+	}
+
 	this.handleUserPosition = () => {
 		if(position.x > this.x){
 			this.x++;
