@@ -12,6 +12,7 @@ const ATACK_SPEED = 10;
 const STATUS_BAR_WIDTH = 5;
 const ARROW_SPEED = 2;
 const ENEMY_SPAWNING_RATE = 200;
+var ENEMY_SPEED = 1;
 
 // map and draw map
 const map = [
@@ -286,17 +287,17 @@ function Enemy(x, y) {
 
 	this.handleUserPosition = () => {
 		if(position.x > this.x){
-			this.x++;
+			this.x+= ENEMY_SPEED;
 			this.userDirectionRel = 3;
 		} else if( position.y > this.y){
-			this.y++;
+			this.y+= ENEMY_SPEED;
 			this.userDirectionRel = 1;
 		}
 		if(position.x < this.x){
-			this.x--;
+			this.x-= ENEMY_SPEED;
 			this.userDirectionRel = 2;
 		} else if(position.y < this.y){
-			this.y--;
+			this.y-= ENEMY_SPEED;
 			this.userDirectionRel = 0;
 		}
 	}
@@ -370,6 +371,9 @@ var last_mob_spawn = 0;
 const handle_mob_spawning = () => {
 	if(mob_spawn_counter == ENEMY_SPAWNING_RATE){
 		spawn_new_enemy();
+		if(mobs_on_game.length %10 == 0){
+			ENEMY_SPEED++;
+		}
 		mob_spawn_counter = 0;
 	}
 	mob_spawn_counter++;
